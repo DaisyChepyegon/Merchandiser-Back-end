@@ -5,7 +5,7 @@ class OutletsController < ApplicationController
    def index
     outlets = Outlet.all
  
-     render json:outlets
+     render json: outlets
    end
  
    # GET /outlets/1
