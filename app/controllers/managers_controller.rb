@@ -3,45 +3,58 @@ class ManagersController < ApplicationController
 
   # GET /managers
   def index
-    @managers = Manager.all
+    managers = Manager.all
 
-    render json: @managers
+    render json: managers
   end
 
   # GET /managers/1
   def show
-    render json: @manager
+    manager = set_manager
+    if manager
+      render json: manager
+    else
+      render json: {error: "manager Not Found"}, status: :not_found
+    end
   end
 
   # POST /managers
   def create
-    @manager = Manager.new(manager_params)
+    manager = Manager.create(manager_params)
 
-    if @manager.save
-      render json: @manager, status: :created, location: @manager
+    if manager
+      render json: manager, status: :created, location: manager
     else
-      render json: @manager.errors, status: :unprocessable_entity
+      render json: manager.errors, status: :unprocessable_entity
     end
   end
 
   # PATCH/PUT /managers/1
   def update
-    if @manager.update(manager_params)
-      render json: @manager
+    manager = set_manager
+    if manager
+      manager.update(manager_params)
+      render json: manager
     else
-      render json: @manager.errors, status: :unprocessable_entity
+      render json: manager.errors, status: :unprocessable_entity
     end
   end
 
   # DELETE /managers/1
   def destroy
-    @manager.destroy
+    manager = set_manager
+    if manager
+      manager.destroy
+      head :no_content
+    else
+      render json: {error: "manager Not Found"}, status: :not_found
+    end
   end
 
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_manager
-      @manager = Manager.find(params[:id])
+      Manager.find(params[:id])
     end
 
     # Only allow a list of trusted parameters through.
