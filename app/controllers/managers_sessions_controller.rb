@@ -1,8 +1,8 @@
 class ManagersSessionsController < ApplicationController
     def create
         manager = Manager.find_by(email: session_params_manager[:email])
-        if manager &.authenticate(session_params_manager[:password])
-          session[:merchandiser_id] = manager_id.id
+        if manager&.authenticate(session_params_manager[:password])
+          session[:manager_id] = manager_id.id
           render json: {
             logged_in: true,
             manager: manager
