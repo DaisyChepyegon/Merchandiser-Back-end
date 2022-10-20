@@ -18,9 +18,26 @@ class MerchandisersController < ApplicationController
 
   # POST /merchandisers
   def create
+
     merchandiser = Merchandiser.create!(merchandiser_params)
     render json: merchandiser, status: :created
   end
+
+    merchandiser = Merchandiser.new(merchandiser_params)
+    if  merchandiser.save and merchandiser.valid?
+        session[:admin_id] =  merchandiser.id
+        render json: {
+            status: :created,
+            merchandiser: merchandiser
+        }
+    else
+        render json: {
+            status: 500,
+            errors: merchandiser.errors.full_messages
+        }
+    end
+end
+
 
   # PATCH/PUT /merchandisers/1
   def update
@@ -45,7 +62,7 @@ class MerchandisersController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def merchandiser_params
-      params.require(:merchandiser).permit(:username, :image, :email, :phone_number, :password, :user_id, :manager_id)
+      params.require(:merchandiser).permit(:username, :email,  :password, :user_id, :password_confirmation)
     end
 
     def render_not_found_response

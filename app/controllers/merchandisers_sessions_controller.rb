@@ -1,7 +1,6 @@
 class MerchandisersSessionsController < ApplicationController
     def create
         merchandiser = Merchandiser.find_by(email: session_params_merchandiser[:email])
-      
         if merchandiser&.authenticate(session_params_merchandiser[:password])
           session[:merchandiser_id] = merchandiser.id
           render json: {
@@ -42,5 +41,5 @@ class MerchandisersSessionsController < ApplicationController
     
       private
       def session_params_merchandiser
-       params.require(:merchandiser).permit(:username, :email, :password)
+      params.require(:merchandiser).permit(:username, :email, :password)
 end
