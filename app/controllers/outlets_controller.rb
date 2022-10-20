@@ -1,5 +1,6 @@
 class OutletsController < ApplicationController
   before_action :set_outlet, only: %i[ show update destroy ]
+  rescue_from ActiveRecord::RecordNotFound, with: :render_not_found_response
 
    # GET /outlets
    def index
@@ -10,45 +11,31 @@ class OutletsController < ApplicationController
  
    # GET /outlets/1
    def show
-     outlet = set_outlet
-     if outlet
+     outlet = Outlet.find(params[:id])
        render json: outlet
-     else
-       render json: {error: "outlet Not Found"}, status: :not_found
-     end
    end
  
    # POST /outlets
    def create
-    outlet = Outlet.create(outlet_params)
+    outlet = Outlet.create!(outlet_params)
+    render json: outlet, status: :created
  
-     if outlet
-       render json:outlet, status: :created, location:outlet
-     else
-       render json:outlet.errors, status: :unprocessable_entity
-     end
    end
  
    # PATCH/PUT /outlets/1
    def update
      outlet = set_outlet
-     if outlet
-       outlet.update(outlet_params)
+       outlet.update!(outlet_params)
        render json:outlet
-     else
-       render json:outlet.errors, status: :unprocessable_entity
-     end
+     
    end
  
    # DELETE /outlets/1
    def destroy
      outlet = set_outlet
-     if outlet
        outlet.destroy
        head :no_content
-     else
-       render json: {error: "outlet Not Found"}, status: :not_found
-     end
+    
    end
  
    private
@@ -60,5 +47,9 @@ class OutletsController < ApplicationController
      # Only allow a list of trusted parameters through.
      def outlet_params
        params.require(:outlet).permit(:name, :location, :merchandiser_id)
+     end
+
+     def render_not_found_response
+      render json: { error: "Outlet not found" }, status: :not_found
      end
 end

@@ -1,5 +1,6 @@
 class MerchandisersController < ApplicationController
   before_action :set_merchandiser, only: %i[ show update destroy ]
+  rescue_from ActiveRecord::RecordNotFound, with: :render_not_found_response
 
    # GET /merchandisers
    def index
@@ -11,44 +12,32 @@ class MerchandisersController < ApplicationController
   # GET /merchandisers/1
   def show
     merchandiser = set_merchandiser
-    if merchandiser
+
       render json: merchandiser
-    else
-      render json: {error: "Merchandiser Not Found"}, status: :not_found
-    end
+   
   end
 
   # POST /merchandisers
   def create
-    merchandiser = Merchandiser.create(merchandiser_params)
+    merchandiser = Merchandiser.create!(merchandiser_params)
 
-    if merchandiser
-      render json: merchandiser, status: :created, location: @merchandiser
-    else
-      render json: merchandiser.errors, status: :unprocessable_entity
-    end
+      render json: merchandiser, status: :created
+  
   end
 
   # PATCH/PUT /merchandisers/1
   def update
     merchandiser = set_merchandiser
-    if merchandiser
-      merchandiser.update(merchandiser_params)
+      merchandiser.update!(merchandiser_params)
       render json: merchandiser
-    else
-      render json: merchandiser.errors, status: :unprocessable_entity
-    end
+    
   end
 
   # DELETE /merchandisers/1
   def destroy
     merchandiser = set_merchandiser
-    if merchandiser
       merchandiser.destroy
       head :no_content
-    else
-      render json: {error: "Merchandiser Not Found"}, status: :not_found
-    end
   end
 
   private
@@ -61,4 +50,8 @@ class MerchandisersController < ApplicationController
     def merchandiser_params
       params.require(:merchandiser).permit(:username, :image, :email, :phone_number, :password, :user_id, :manager_id)
     end
+
+    def render_not_found_response
+      render json: { error: "Merchandiser not found" }, status: :not_found
+     end
 end

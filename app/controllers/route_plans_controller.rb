@@ -22,7 +22,7 @@ class RoutePlansController < ApplicationController
    def create
     route_plan = RoutePlan.new(route_plan_params)
  
-     ifroute_plan.save
+     if route_plan.save
        render json:route_plan, status: :created, location:route_plan
      else
        render json:route_plan.errors, status: :unprocessable_entity
