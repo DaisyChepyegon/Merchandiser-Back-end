@@ -1,5 +1,6 @@
 class MerchandisersController < ApplicationController
   before_action :set_merchandiser, only: %i[ show update destroy ]
+  rescue_from ActiveRecord::RecordNotFound, with: :render_not_found_response
 
    # GET /merchandisers
    def index
@@ -11,15 +12,17 @@ class MerchandisersController < ApplicationController
   # GET /merchandisers/1
   def show
     merchandiser = set_merchandiser
-    if merchandiser
-      render json: merchandiser
-    else
-      render json: {error: "Merchandiser Not Found"}, status: :not_found
-    end
+    render json: merchandiser
+   
   end
 
   # POST /merchandisers
   def create
+
+    merchandiser = Merchandiser.create!(merchandiser_params)
+    render json: merchandiser, status: :created
+  end
+
     merchandiser = Merchandiser.new(merchandiser_params)
     if  merchandiser.save and merchandiser.valid?
         session[:admin_id] =  merchandiser.id
@@ -35,26 +38,20 @@ class MerchandisersController < ApplicationController
     end
 end
 
+
   # PATCH/PUT /merchandisers/1
   def update
     merchandiser = set_merchandiser
-    if merchandiser
-      merchandiser.update(merchandiser_params)
+      merchandiser.update!(merchandiser_params)
       render json: merchandiser
-    else
-      render json: merchandiser.errors, status: :unprocessable_entity
-    end
+    
   end
 
   # DELETE /merchandisers/1
   def destroy
     merchandiser = set_merchandiser
-    if merchandiser
       merchandiser.destroy
       head :no_content
-    else
-      render json: {error: "Merchandiser Not Found"}, status: :not_found
-    end
   end
 
   private
@@ -67,4 +64,8 @@ end
     def merchandiser_params
       params.require(:merchandiser).permit(:username, :email,  :password, :user_id, :password_confirmation)
     end
+
+    def render_not_found_response
+      render json: { error: "Merchandiser not found" }, status: :not_found
+     end
 end

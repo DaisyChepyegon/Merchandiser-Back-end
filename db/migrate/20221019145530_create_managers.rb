@@ -6,7 +6,6 @@ class CreateManagers < ActiveRecord::Migration[7.0]
       t.string :email
       t.integer :phone_number
       t.string :password
-      t.integer :manager_id
 
       t.timestamps
     end

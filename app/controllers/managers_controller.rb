@@ -1,5 +1,6 @@
 class ManagersController < ApplicationController
   before_action :set_manager, only: %i[ show update destroy ]
+  rescue_from ActiveRecord::RecordNotFound, with: :render_not_found_response
 
   # GET /managers
   def index
@@ -11,15 +12,15 @@ class ManagersController < ApplicationController
   # GET /managers/1
   def show
     manager = set_manager
-    if manager
-      render json: manager
-    else
-      render json: {error: "manager Not Found"}, status: :not_found
-    end
+    render json: manager
   end
 
   # POST /managers
   def create
+  
+    manager = Manager.create!(manager_params)
+    render json: manager, status: :created, location: manager
+
     manager = Manager.new(manager_params)
 
     if manager.save and manager.valid?
@@ -34,28 +35,21 @@ class ManagersController < ApplicationController
             errors: manager.errors.full_messages
         }
     end
+
   end
 
   # PATCH/PUT /managers/1
   def update
     manager = set_manager
-    if manager
-      manager.update(manager_params)
-      render json: manager
-    else
-      render json: manager.errors, status: :unprocessable_entity
-    end
+    manager.update!(manager_params)
+    render json: manager
   end
 
   # DELETE /managers/1
   def destroy
     manager = set_manager
-    if manager
-      manager.destroy
-      head :no_content
-    else
-      render json: {error: "manager Not Found"}, status: :not_found
-    end
+    manager.destroy
+    head :no_content
   end
 
   private
@@ -68,4 +62,8 @@ class ManagersController < ApplicationController
     def manager_params
       params.require(:manager).permit(:username, :email, :password, :password_confirmation)
     end
+
+    def render_not_found_response
+      render json: { error: "Manager not found" }, status: :not_found
+     end
 end
