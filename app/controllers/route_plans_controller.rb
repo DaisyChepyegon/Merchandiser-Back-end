@@ -16,8 +16,18 @@ class RoutePlansController < ApplicationController
  
    # POST /route_plans
    def create
+
     route_plan = RoutePlan.create!(route_plan_params)
     render json:route_plan, status: :created, location:route_plan
+
+    route_plan = RoutePlan.new(route_plan_params)
+ 
+     if route_plan.save
+       render json:route_plan, status: :created, location:route_plan
+     else
+       render json:route_plan.errors, status: :unprocessable_entity
+     end
+
    end
  
    # PATCH/PUT /route_plans/1

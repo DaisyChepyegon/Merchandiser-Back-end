@@ -17,8 +17,25 @@ class ManagersController < ApplicationController
 
   # POST /managers
   def create
+  
     manager = Manager.create!(manager_params)
     render json: manager, status: :created, location: manager
+
+    manager = Manager.new(manager_params)
+
+    if manager.save and manager.valid?
+        session[:admin_id] = manager.id
+        render json: {
+            status: :created,
+            manager: manager
+        }
+    else
+        render json: {
+            status: 500,
+            errors: manager.errors.full_messages
+        }
+    end
+
   end
 
   # PATCH/PUT /managers/1
@@ -43,7 +60,7 @@ class ManagersController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def manager_params
-      params.require(:manager).permit(:username, :image, :email, :phone_number, :password, :manager_id)
+      params.require(:manager).permit(:username, :email, :password, :password_confirmation)
     end
 
     def render_not_found_response
