@@ -12,17 +12,14 @@ class MerchandisersController < ApplicationController
   # GET /merchandisers/1
   def show
     merchandiser = set_merchandiser
-
-      render json: merchandiser
+    render json: merchandiser
    
   end
 
   # POST /merchandisers
   def create
     merchandiser = Merchandiser.create!(merchandiser_params)
-
-      render json: merchandiser, status: :created
-  
+    render json: merchandiser, status: :created
   end
 
   # PATCH/PUT /merchandisers/1
